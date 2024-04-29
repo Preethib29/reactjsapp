@@ -1,0 +1,48 @@
+name: CI/CD for React App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: |
+        npm install
+        npm ci --only=production
+
+    - name: Build React app
+      run: npm run build
+
+    - name: Test React app
+      run: npm test
+
+    - name: CodeQL Security Analysis
+      uses: github/codeql-action@v2
+      with:
+        languages: javascript
+        queries: ./path/to/your/codeql/queries
+
+    - name: Error Handling
+      run: |
+        # Add your error handling logic here, such as checking for failed tests or build errors
+        # For example:
+        if [ $? -ne 0 ]; then
+          echo "Error: Build or tests failed"
+          exit 1
+        fi
